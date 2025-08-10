@@ -1,23 +1,26 @@
 # model/train_model.py
 
 import sys
-
-import pandas as pd
-import numpy as np
 import os
 import joblib
+import warnings
+warnings.filterwarnings("ignore")
+import pandas as pd
+import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.utils.class_weight import compute_class_weight
-from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
-import warnings
+from time import sleep
+from imblearn.over_sampling import SMOTE
 from sklearn.pipeline import Pipeline
 warnings.filterwarnings('ignore')
 sys.stdout.reconfigure(encoding='utf-8')
+
+
 
 import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend
@@ -224,53 +227,57 @@ def train_model(df_all, available_features=None, model_params=None):
     if 'target_hit' not in df_all.columns:
         raise ValueError("Target column 'target_hit' not found in dataframe")
     try:
-        # Data preparation - handle NaN values in both features and target
         print("📊 Initial data shape:", df_all.shape)
-        
-        # First, drop rows where target is NaN
-        df_all = df_all.dropna(subset=['target_hit'])
-        print("📊 After dropping NaN targets:", df_all.shape)
+        initial_rows = len(df_all)
+        # Replace inf/-inf in numeric columns only
+        num_cols = df_all.select_dtypes(include=[np.number]).columns
+        df_all[num_cols] = df_all[num_cols].replace([np.inf, -np.inf], np.nan)
+        # Drop rows with NaN in features or target
+        df_all = df_all.dropna(subset=available_features + ['target_hit']).reset_index(drop=True)
 
-        df_all.replace([np.inf, -np.inf], np.nan, inplace=True)
-        
-        # Then drop rows where any of the features are NaN
-        df_all = df_all.dropna(subset=available_features)
-        print("After dropping NaN features:", df_all.shape)
+        final_rows = len(df_all)
+        print(f"✅ Dropped {initial_rows - final_rows} rows due to NaN/Inf values.")
+        print("📊 Final data shape:", df_all.shape)
 
-        df_all.to_csv('df_all_with_features_for_traingin.csv')
-        
+        # df_all.to_csv('df_all_with_features_for_traingin.csv')
+
+        # Feature-target split
         X = df_all[available_features]
         y = df_all['target_hit']
-        
-        # Fill any remaining NaN values in features
-        X = X.fillna(0)
-        
-        # Verify no NaN values remain
-        print(f" NaN values in features: {X.isnull().sum().sum()}")
-        print(f"NaN values in target: {y.isnull().sum()}")
+
         
         # Check class distribution
         class_counts = y.value_counts()
-        logger.info(f"Class distribution: {class_counts.to_dict()}")
+        class_percent = y.value_counts(normalize=True) * 100
+        logger.info(f"Class distribution: {class_counts.to_dict()} ({class_percent.to_dict()} %)")
+
+
+        smote = SMOTE(random_state=42)
+        X, y = smote.fit_resample(X, y)
+        print("After balancing classes:", X.shape, "Class distribution:", y.value_counts())
+
+        sleep(200)
+        
+        if class_percent.min() < 5:
+            logger.warning("⚠ Severe class imbalance detected — consider resampling.")
         
         if len(class_counts) < 2:
             logger.error("Only one class found in target variable")
             raise ValueError("Only one class found in target variable")
             
         # Check if we have enough samples after cleaning
-        if len(df_all) < 50:
-            logger.warning(f"Very few samples remaining after cleaning: {len(df_all)}")
+        MIN_SAMPLES = 500  # adjustable threshold
+        if len(df_all) < MIN_SAMPLES:
+            logger.warning(f"⚠ Very few samples remaining after cleaning: {len(df_all)} (< {MIN_SAMPLES})")
             
         # Additional check for target variable data types
-        if y.dtype not in ['int64', 'int32', 'float64', 'float32', 'bool']:
+        if not pd.api.types.is_numeric_dtype(y):
             logger.warning(f"Target variable dtype is {y.dtype}, converting to numeric")
             y = pd.to_numeric(y, errors='coerce')
-            # Drop any rows that couldn't be converted
             mask = ~y.isnull()
-            X = X[mask]
-            y = y[mask]
-            print(f"After numeric conversion: {len(X)} samples")
-        
+            X, y = X[mask], y[mask]
+            logger.info(f"After numeric conversion: {len(X)} samples remain")
+                
         # Scale features
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)

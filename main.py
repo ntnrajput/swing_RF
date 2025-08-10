@@ -78,6 +78,8 @@ def main():
         df = add_technical_indicators(df)
         df.to_csv('data_with_feature.csv')
         df = df[df['date'] > pd.to_datetime("2021-08-01")]
+        print(df['target_hit'].value_counts())  # absolute counts
+        print(df['target_hit'].value_counts(normalize=True))
         if 'target_hit' not in df.columns:
             logger.error("'target_hit' column not found. Cannot train model.")
         else:
