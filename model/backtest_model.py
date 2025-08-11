@@ -98,7 +98,7 @@ class SwingTradingBacktester:
     def calculate_position_size(self, current_price, confidence, volatility=None):
         """Calculate position size based on confidence and risk management"""
         # Base position size as percentage of portfolio
-        base_position_pct = 0.035# 5% of portfolio per trade
+        base_position_pct = 0.005# 5% of portfolio per trade
         
         # Adjust based on confidence (0.5 to 1.0 range)
         confidence_multiplier = max(0.5, min(2.0, confidence * 2))

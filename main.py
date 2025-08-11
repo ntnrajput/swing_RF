@@ -46,7 +46,7 @@ def main():
     parser.add_argument("--token", type=str, help="Generate access token using auth code")
     
     # Backtest parameters
-    parser.add_argument("--capital", type=float, default=200000, help="Initial capital for backtest")
+    parser.add_argument("--capital", type=float, default=500000, help="Initial capital for backtest")
     parser.add_argument("--commission", type=float, default=0.001, help="Commission rate (0.001 = 0.1%)")
     parser.add_argument("--slippage", type=float, default=0.0005, help="Slippage rate (0.0005 = 0.05%)")
     parser.add_argument("--holding-period", type=int, default=21, help="Maximum holding period in days")

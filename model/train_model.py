@@ -255,8 +255,6 @@ def train_model(df_all, available_features=None, model_params=None):
         smote = SMOTE(random_state=42)
         X, y = smote.fit_resample(X, y)
         print("After balancing classes:", X.shape, "Class distribution:", y.value_counts())
-
-        sleep(200)
         
         if class_percent.min() < 5:
             logger.warning("⚠ Severe class imbalance detected — consider resampling.")
