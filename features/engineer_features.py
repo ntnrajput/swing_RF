@@ -6,7 +6,7 @@ from numba import jit
 import warnings
 warnings.filterwarnings('ignore')
 
-from utils.helper import calculate_ema, calculate_rsi, calculate_atr
+from utils.helper import calculate_ema, calculate_rsi, calculate_atr, calculate_sma
 from features.swing_utils import (
     calculate_bb_position,
     add_candle_features,
@@ -115,8 +115,14 @@ def add_basic_indicators_vectorized(df: pd.DataFrame, close: np.ndarray, high: n
     # EMA calculations (vectorized)
     for period in EMA_PERIODS:
         df[f"ema{period}"] = calculate_ema(df["close"], period)
+
+    for period in EMA_PERIODS:
+        df[f"sma{period}"] = calculate_sma(df["close"], period)
+    
     df['ema20_ema50'] = df['ema20']/df['ema50']
+    df['sma20_sma50'] = df['sma20']/df['sma50']
     df['ema50_ema200'] = df['ema50']/df['ema200']
+    df['sma50_sma200'] = df['sma50']/df['sma200']
     df['ema20_price'] =df['ema20']/df['close']
     df['ema50_price'] =df['ema50']/df['close']
     df['ema200_price'] =df['ema200']/df['close']

@@ -304,8 +304,8 @@ def train_model(df_all, available_features=None, model_params=None):
                 'n_estimators': [100],
                 'max_depth': [10, None],
                 'min_samples_split': [2, 5],
-                'min_samples_leaf': [1],
-                'max_features': ['sqrt']
+                'min_samples_leaf': [3],
+                'max_features': ['sqrt','log2']
             }
         
         print("🔍 Performing enhanced hyperparameter tuning...")
