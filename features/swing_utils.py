@@ -229,7 +229,7 @@ def cluster_levels(levels, price_threshold=0.01):
 import pandas as pd
 import numpy as np
 
-def add_nearest_sr(df, lookback=50, tolerance=0.002):
+def add_nearest_sr(df, lookback=21, tolerance=0.002):
     """
     Optimized support/resistance detection without future leakage.
     For each date, finds nearest support/resistance from the last `lookback` candles.
