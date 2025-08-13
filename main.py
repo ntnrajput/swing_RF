@@ -8,8 +8,8 @@ from data.fetch_stock_list import load_symbols
 from data.fetch_historical_data import fetch_and_store_all
 from features.engineer_features import add_technical_indicators
 from model.train_model import train_model
-# from model.backtest_model import run_backtest
-from model.daily_backtest_model import run_backtest
+from model.backtest_model import run_backtest
+# from model.daily_backtest_model import run_backtest
 from strategy.screener import run_screener
 from data.fetch_auth import generate_access_token
 from utils.logger import get_logger

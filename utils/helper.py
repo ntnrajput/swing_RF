@@ -5,6 +5,7 @@ import numpy as np
 from datetime import datetime
 import os
 import glob
+from config import ATR_Period
 
 def get_today_date_str():
     """Returns today's date in yyyy-mm-dd format."""
@@ -18,8 +19,7 @@ def calculate_sma(series: pd.Series, period: int) -> pd.Series:
     """Calculate Simple Moving Average (SMA)."""
     return series.rolling(window=period, min_periods=period).mean()
 
-
-def calculate_rsi(series: pd.Series, period: int = 14) -> pd.Series:
+def calculate_rsi(series: pd.Series, period) -> pd.Series:
     """Calculate Relative Strength Index (RSI)."""
     delta = series.diff()
     gain = delta.where(delta > 0, 0.0)
@@ -32,14 +32,14 @@ def calculate_rsi(series: pd.Series, period: int = 14) -> pd.Series:
     rsi = 100 - (100 / (1 + rs))
     return rsi
 
-def calculate_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
+def calculate_atr(df: pd.DataFrame, ATR_period) -> pd.Series:
     """Calculate Average True Range (ATR)."""
     high_low = df['high'] - df['low']
     high_close = np.abs(df['high'] - df['close'].shift())
     low_close = np.abs(df['low'] - df['close'].shift())
 
     tr = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
-    atr = tr.rolling(window=period).mean()
+    atr = tr.rolling(window=ATR_period).mean()
     return atr
 
 def delete_csv(folder_path, keep_file):

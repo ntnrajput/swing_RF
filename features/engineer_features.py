@@ -13,7 +13,8 @@ from features.swing_utils import (
     add_nearest_sr,
     generate_swing_labels
 )
-from config import EMA_PERIODS, RSI_PERIOD, AVG_VOL,AVG_PRICE
+from config import EMA_PERIODS, RSI_PERIOD, Vol_Avg_Period, Fib_Pivot_Window, AVG_VOL, AVG_PRICE
+from config import ATR_Period
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -59,7 +60,7 @@ def add_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
         # pd.concat(all_dfs).to_csv('features.csv', index=False)
     return pd.concat(all_dfs, ignore_index=True)
 
-def calculate_rolling_fib_pivots(df, window=10):
+def calculate_rolling_fib_pivots(df, window):
     """Calculate rolling Fibonacci pivot levels using a rolling window."""
     
     # Calculate rolling high, low, close over window periods
@@ -78,6 +79,11 @@ def calculate_rolling_fib_pivots(df, window=10):
     fib_s2 = pivot - 0.618 * fib_range
     
     # Calculate distances as percentages
+    df['pivot'] = pivot
+    df['fib_r1'] = fib_r1
+    df['fib_r2'] = fib_r2
+    df['fib_s1'] = fib_s1
+    df['fib_s2'] = fib_s2
     df['fib_pivot_distance_pct'] = (df['close'] - pivot) / pivot * 100
     df['fib_r1_distance_pct'] = (df['close'] - fib_r1) / fib_r1 * 100
     df['fib_r2_distance_pct'] = (df['close'] - fib_r2) / fib_r2 * 100
@@ -126,13 +132,16 @@ def add_basic_indicators_vectorized(df: pd.DataFrame, close: np.ndarray, high: n
     df['ema20_price'] =df['ema20']/df['close']
     df['ema50_price'] =df['ema50']/df['close']
     df['ema200_price'] =df['ema200']/df['close']
+    df['sma20_price'] =df['sma20']/df['close']
+    df['sma50_price'] =df['sma50']/df['close']
+    df['sma200_price'] =df['sma200']/df['close']
     # RSI and ATR
     df["rsi"] = calculate_rsi(df["close"], RSI_PERIOD)
-    df['atr'] = calculate_atr(df)  # keep atr column for evaluation; we'll add atr_pct
+    df['atr'] = calculate_atr(df, ATR_Period)  # keep atr column for evaluation; we'll add atr_pct
     df['atr_pct'] = df['atr'] / df['close']
     if 'volume' in df.columns:
         vol = df['volume'].fillna(0)
-        df['vol_by_avg_vol'] = vol / vol.rolling(50, min_periods=1).mean()
+        df['vol_by_avg_vol'] = vol / vol.rolling(Vol_Avg_Period, min_periods=1).mean()
         df['obv'] = calculate_obv(df['close'], vol)
         df['vol_change_5d'] = vol.pct_change(5)
     else:
@@ -157,15 +166,15 @@ def add_basic_indicators_vectorized(df: pd.DataFrame, close: np.ndarray, high: n
     # EMA crossover signals and fresh cross flags
     df['ema20_above_ema50'] = (df['ema20'] > df['ema50']).astype(int)
     df['ema20_50_cross_up'] = ((df['ema20'] > df['ema50']) & (df['ema20'].shift(1) <= df['ema50'].shift(1))).astype(int)
+    df['sma20_50_cross_up'] = ((df['sma20'] > df['sma50']) & (df['sma20'].shift(1) <= df['sma50'].shift(1))).astype(int)
     df['ema20_50_cross_down'] = ((df['ema20'] < df['ema50']) & (df['ema20'].shift(1) >= df['ema50'].shift(1))).astype(int)
-
 
     range_hl = df['high'] - df['low']
     df['close_position_in_range'] = np.where(range_hl != 0, (df['close'] - df['low']) / range_hl, 0.5)
 
     df['gap_pct'] = (df['open'] - df['close'].shift(1)) / df['close'].shift(1)
 
-    df = calculate_rolling_fib_pivots(df,window=5)
+    df = calculate_rolling_fib_pivots(df,window=Fib_Pivot_Window)
     df = add_macd(df)
     return df
 
@@ -178,4 +187,3 @@ def calculate_obv(close: pd.Series, volume: pd.Series) -> pd.Series:
 def rolling_slope(series: pd.Series, period: int) -> pd.Series:
     # Simple slope approximation: (value_now - value_n_steps_ago) / (period-1)
     return (series - series.shift(period-1)) / (period-1)
-

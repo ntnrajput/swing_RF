@@ -7,6 +7,7 @@ from scipy.signal import argrelextrema
 from scipy.stats import linregress
 import warnings
 warnings.filterwarnings('ignore')
+from config import Strong_Low_Close, Strong_High_Close
 
 def calculate_rsi(prices, period=14):
     """Calculate RSI with improved smoothing."""
@@ -72,12 +73,9 @@ def add_candle_features(df):
                              (df['upper_shadow_to_range'] > 0.6) & 
                              (df['lower_shadow_to_range'] < 0.1)).astype(np.int8)
     
-    # df['range_pct'] = df['range'] / df['close']
-    # df['close_below_1/2'] = df['close'] < (df['low']+(df['range'] * 0.4))
     df['close_compared_to_previous'] = (df['close']-df['close'].shift(1))/df['close']
     
-    # df['strong_rejection'] = ((df['range_pct'] > 0.05)  | (df['close_below_1/2'])).astype(int)
-    df['strong_rejection'] = ((df['close_compared_to_previous']<-0.035) | (df['close_compared_to_previous'] > 0.07)).astype(int)
+    df['strong_rejection'] = ((df['close_compared_to_previous']< Strong_Low_Close) | (df['close_compared_to_previous'] > Strong_High_Close)).astype(int)
     
     # Advanced patterns
     # df = add_advanced_candle_patterns(df)

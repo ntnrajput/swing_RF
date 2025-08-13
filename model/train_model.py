@@ -20,8 +20,6 @@ from sklearn.pipeline import Pipeline
 warnings.filterwarnings('ignore')
 sys.stdout.reconfigure(encoding='utf-8')
 
-
-
 import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend
 import matplotlib.pyplot as plt
@@ -305,7 +303,7 @@ def train_model(df_all, available_features=None, model_params=None):
                 'max_depth': [10, None],
                 'min_samples_split': [2, 5],
                 'min_samples_leaf': [3],
-                'max_features': ['sqrt','log2']
+                'max_features': ['sqrt']
             }
         
         print("🔍 Performing enhanced hyperparameter tuning...")
