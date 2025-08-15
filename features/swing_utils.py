@@ -75,7 +75,7 @@ def add_candle_features(df):
     
     df['close_compared_to_previous'] = (df['close']-df['close'].shift(1))/df['close']
     
-    df['strong_rejection'] = ((df['close_compared_to_previous']< Strong_Low_Close) | (df['close_compared_to_previous'] > Strong_High_Close)).astype(int)
+    df['strong_rejection'] = ((df['close_compared_to_previous']< Strong_Low_Close) | (df['close_compared_to_previous'] > Strong_High_Close) ).astype(int)
     
     # Advanced patterns
     # df = add_advanced_candle_patterns(df)
