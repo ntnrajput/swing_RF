@@ -42,15 +42,12 @@ def calculate_atr(df: pd.DataFrame, ATR_period) -> pd.Series:
     atr = tr.rolling(window=ATR_period).mean()
     return atr
 
+
 def delete_csv(folder_path, keep_file):
-    """
-    Delete all CSV files in a folder except the specified one.
     
-    :param folder_path: Path to the folder containing CSV files.
-    :param keep_file: Filename to keep (just the name, not the full path).
-    """
-    for file_path in glob.glob(os.path.join(folder_path, "*.csv")):
-        if os.path.basename(file_path) != keep_file:
-            os.remove(file_path)
-            print(f"Deleted: {file_path}")
+    for ext in ("*.csv", "*.xlsx"):
+        for file_path in glob.glob(os.path.join(folder_path, ext)):
+            if os.path.basename(file_path) != keep_file:
+                os.remove(file_path)
+                print(f"Deleted: {file_path}")
     print("Cleanup complete.")
