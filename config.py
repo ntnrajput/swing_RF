@@ -42,6 +42,7 @@ MODEL_FILE = Path(f"models/{version}/enhanced_model_pipeline.pkl")
 # === LOGGING ===
 LOG_FILE = Path("outputs/logs/system.log")
 
+<<<<<<< HEAD
 # ====Feature Columns====
 FEATURE_COLUMNS = [
     'ema20_ema50',	'ema50_ema200',	'ema20_price',	'ema50_price',	'ema200_price',	'rsi',	'atr_pct',
@@ -59,5 +60,43 @@ FEATURE_COLUMNS = [
 # ]
 
 CONFIDENCE_THRESHOLD = 0.75
+=======
+#====Feature Columns====
+# FEATURE_COLUMNS = [
+#     'ema20_ema50',	'ema50_ema200',	'ema20_price',	'ema50_price',	'ema200_price',	'rsi',	'atr_pct',
+#     'obv',	'vol_change_5d', 'ret_1d',	'ret_3d',	'ret_5d',	'ret_10d', 'vol_5d',	
+#     'vol_10d',	'rsi_3_slope',	'rsi_5_slope',	'ema20_above_ema50', 'ema20_50_cross_up', 'ema20_50_cross_down',
+#     'close_position_in_range',	'gap_pct',	'fib_pivot_distance_pct',	'fib_r1_distance_pct',	'fib_r2_distance_pct',
+#     'fib_s1_distance_pct',	'fib_s2_distance_pct', 'is_bullish',	'is_bearish',	'body_to_range',	
+#     'upper_shadow_to_range',	'lower_shadow_to_range',	'is_doji',	'is_hammer',	'is_shooting_star',
+#     'close_compared_to_previous', 'bb_position', 'support_pct', 'resistance_pct', 'sma20_sma50', 'sma20_50_cross_up'
+# ]
+
+FEATURE_COLUMNS = [
+    'ema20_ema50',	'ema50_ema200',	'ema20_price',	'ema50_price',	'ema200_price',	'rsi',	'atr_pct',
+    'obv',	'vol_change_5d', 'ret_1d',	'ret_3d',	'ret_5d',	'ret_10d', 'vol_5d',	
+    'vol_10d',	'rsi_3_slope',	'rsi_5_slope',	'ema20_above_ema50', 
+    'close_position_in_range',	'gap_pct',	'fib_pivot_distance_pct',	'fib_r1_distance_pct',	'fib_r2_distance_pct',
+    'fib_s1_distance_pct',	'fib_s2_distance_pct', 'is_bullish',	'is_bearish',	'body_to_range',	
+    'upper_shadow_to_range',	'lower_shadow_to_range',	
+    'close_compared_to_previous', 'bb_position', 'support_pct', 'resistance_pct', 'sma20_sma50', 
+]
+
+
+CONFIDENCE_THRESHOLD = 0.73
+
+# old model
+# 0.7   452  30.5  -6
+# 0.72    300   19.84   -5.83
+
+
+# new model 
+# 0.7   409  23.82  -8.27
+# 0.72    303   21.98   -5.45
+# 0.73    253   18.77   -1.02
+# 0.75    145   15.67  -1.05
+# 0.76  145   13.81  -1.07
+# 0.77  75   9.14  -1.11
+>>>>>>> 5e2fe37bca72119bb637f350f66b9ea6503167a3
 
 
