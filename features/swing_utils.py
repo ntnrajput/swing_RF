@@ -229,10 +229,72 @@ def cluster_levels(levels, price_threshold=0.01):
 import pandas as pd
 import numpy as np
 
-def add_nearest_sr(df, lookback=50, tolerance=0.002):
+# def add_nearest_sr(df, lookback=50, tolerance=0.002):
+#     """
+#     Optimized support/resistance detection without future leakage.
+#     For each date, finds nearest support/resistance from the last `lookback` candles.
+#     Returns:
+#         df with added columns: nearest_support, support_pct, nearest_resistance, resistance_pct
+#     """
+
+#     lows = df['low'].values
+#     highs = df['high'].values
+#     closes = df['close'].values
+#     n = len(df)
+
+#     nearest_supports = np.full(n, np.nan)
+#     support_pct = np.full(n, np.nan)
+#     nearest_resistances = np.full(n, np.nan)
+#     resistance_pct = np.full(n, np.nan)
+
+#     for i in range(n):
+#         if i < lookback:
+#             continue  # Not enough history
+
+#         # Lookback window without future data
+#         win_lows = lows[i-lookback:i+1]
+#         win_highs = highs[i-lookback:i+1]
+
+#         # --- Detect supports (local minima) ---
+#         support_candidates = []
+#         for j in range(2, len(win_lows)-2):
+#             if win_lows[j] < win_lows[j-1] and win_lows[j] < win_lows[j+1]:
+#                 val = win_lows[j]
+#                 touches = (np.abs(win_lows - val) / val < tolerance).sum()
+#                 if not any(abs(val - s[0]) / s[0] < tolerance for s in support_candidates):
+#                     support_candidates.append((val, touches))
+
+#         # --- Detect resistances (local maxima) ---
+#         resistance_candidates = []
+#         for j in range(2, len(win_highs)-2):
+#             if win_highs[j] > win_highs[j-1] and win_highs[j] > win_highs[j+1]:
+#                 val = win_highs[j]
+#                 touches = (np.abs(win_highs - val) / val < tolerance).sum()
+#                 if not any(abs(val - r[0]) / r[0] < tolerance for r in resistance_candidates):
+#                     resistance_candidates.append((val, touches))
+
+#         # --- Get nearest SR ---
+#         if support_candidates:
+#             nearest_s = min(support_candidates, key=lambda x: abs(x[0] - closes[i]))
+#             nearest_supports[i] = nearest_s[0]
+#             support_pct[i] = (closes[i] - nearest_s[0]) / closes[i] * 100
+
+#         if resistance_candidates:
+#             nearest_r = min(resistance_candidates, key=lambda x: abs(x[0] - closes[i]))
+#             nearest_resistances[i] = nearest_r[0]
+#             resistance_pct[i] = (nearest_r[0] - closes[i]) / closes[i] * 100
+
+#     df['nearest_support'] = nearest_supports
+#     df['support_pct'] = support_pct
+#     df['nearest_resistance'] = nearest_resistances
+#     df['resistance_pct'] = resistance_pct
+
+#     return df
+
+def add_nearest_sr(df, lookback=21, tolerance=0.002):
     """
     Optimized support/resistance detection without future leakage.
-    For each date, finds nearest support/resistance from the last `lookback` candles.
+    For each date, finds nearest levels from the last `lookback` candles.
     Returns:
         df with added columns: nearest_support, support_pct, nearest_resistance, resistance_pct
     """
@@ -273,16 +335,22 @@ def add_nearest_sr(df, lookback=50, tolerance=0.002):
                 if not any(abs(val - r[0]) / r[0] < tolerance for r in resistance_candidates):
                     resistance_candidates.append((val, touches))
 
-        # --- Get nearest SR ---
-        if support_candidates:
-            nearest_s = min(support_candidates, key=lambda x: abs(x[0] - closes[i]))
-            nearest_supports[i] = nearest_s[0]
-            support_pct[i] = (closes[i] - nearest_s[0]) / closes[i] * 100
+        # --- Get nearest SR (consider both supports & resistances as levels) ---
+        all_levels = support_candidates + resistance_candidates  # concatenate lists
 
-        if resistance_candidates:
-            nearest_r = min(resistance_candidates, key=lambda x: abs(x[0] - closes[i]))
-            nearest_resistances[i] = nearest_r[0]
-            resistance_pct[i] = (nearest_r[0] - closes[i]) / closes[i] * 100
+        # Nearest "support": closest level strictly below the close
+        below_close = [lvl for lvl in all_levels if lvl[0] < closes[i]]
+        if below_close:
+            nearest_below = max(below_close, key=lambda x: x[0])  # highest level below
+            nearest_supports[i] = nearest_below[0]
+            support_pct[i] = (closes[i] - nearest_below[0]) / closes[i] * 100
+
+        # Nearest "resistance": closest level strictly above the close
+        above_close = [lvl for lvl in all_levels if lvl[0] > closes[i]]
+        if above_close:
+            nearest_above = min(above_close, key=lambda x: x[0])  # lowest level above
+            nearest_resistances[i] = nearest_above[0]
+            resistance_pct[i] = (nearest_above[0] - closes[i]) / closes[i] * 100
 
     df['nearest_support'] = nearest_supports
     df['support_pct'] = support_pct
@@ -290,7 +358,6 @@ def add_nearest_sr(df, lookback=50, tolerance=0.002):
     df['resistance_pct'] = resistance_pct
 
     return df
-
 
 def remove_duplicates(levels, tolerance):
     """Remove duplicate levels that are too close to each other."""

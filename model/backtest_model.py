@@ -129,8 +129,8 @@ class SwingTradingBacktester:
         if action == 'BUY':
             # Check if we have enough cash
             total_required = trade_value + total_cost
-            # if self.cash >= total_required:
-            if self.cash >= -2000000000000000000000:
+            if self.cash >= total_required:
+            # if self.cash >= -2000000000000000000000:
                 self.cash -= total_required
                 
                 # Add to positions

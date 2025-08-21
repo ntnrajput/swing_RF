@@ -42,22 +42,22 @@ MODEL_FILE = Path(f"models/{version}/enhanced_model_pipeline.pkl")
 # === LOGGING ===
 LOG_FILE = Path("outputs/logs/system.log")
 
-#====Feature Columns====
-# FEATURE_COLUMNS = [
-#     'ema20_ema50',	'ema50_ema200',	'ema20_price',	'ema50_price',	'ema200_price',	'rsi',	'atr_pct',
-#     'obv',	'vol_change_5d', 'ret_1d',	'ret_3d',	'ret_5d',	'ret_10d', 'vol_5d',	
-#     'vol_10d',	'rsi_3_slope',	'rsi_5_slope',	'ema20_above_ema50', 'ema20_50_cross_up', 'ema20_50_cross_down',
-#     'close_position_in_range',	'gap_pct',	'fib_pivot_distance_pct',	'fib_r1_distance_pct',	'fib_r2_distance_pct',
-#     'fib_s1_distance_pct',	'fib_s2_distance_pct', 'is_bullish',	'is_bearish',	'body_to_range',	
-#     'upper_shadow_to_range',	'lower_shadow_to_range',	'is_doji',	'is_hammer',	'is_shooting_star',
-#     'close_compared_to_previous', 'bb_position', 'support_pct', 'resistance_pct', 'sma20_sma50', 'sma20_50_cross_up'
-# ]
-
-
+# ====Feature Columns====
 FEATURE_COLUMNS = [
-   	'ema50_ema200',	'atr_pct', 'ema20_50_cross_up', 'ema20_50_cross_down', 'sma20_sma50', 'sma20_50_cross_up'
+    'ema20_ema50',	'ema50_ema200',	'ema20_price',	'ema50_price',	'ema200_price',	'rsi',	'atr_pct',
+    'obv',	'vol_change_5d', 'ret_1d',	'ret_3d',	'ret_5d',	'ret_10d', 'vol_5d',	
+    'vol_10d',	'rsi_3_slope',	'rsi_5_slope',	'ema20_above_ema50', 'ema20_50_cross_up', 'ema20_50_cross_down',
+    'close_position_in_range',	'gap_pct',	'fib_pivot_distance_pct',	'fib_r1_distance_pct',	'fib_r2_distance_pct',
+    'fib_s1_distance_pct',	'fib_s2_distance_pct', 'is_bullish',	'is_bearish',	'body_to_range',	
+    'upper_shadow_to_range',	'lower_shadow_to_range',	'is_doji',	'is_hammer',	'is_shooting_star',
+    'close_compared_to_previous', 'bb_position', 'support_pct', 'resistance_pct', 'sma20_sma50', 'sma20_50_cross_up'
 ]
 
-CONFIDENCE_THRESHOLD = 0.65
+
+# FEATURE_COLUMNS = [
+#    	'ema50_ema200',	'atr_pct', 'ema20_50_cross_up', 'ema20_50_cross_down', 'sma20_sma50', 'sma20_50_cross_up'
+# ]
+
+CONFIDENCE_THRESHOLD = 0.75
 
 
