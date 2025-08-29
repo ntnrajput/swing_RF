@@ -229,7 +229,6 @@ def cluster_levels(levels, price_threshold=0.01):
 import pandas as pd
 import numpy as np
 
-<<<<<<< HEAD
 # def add_nearest_sr(df, lookback=50, tolerance=0.002):
 #     """
 #     Optimized support/resistance detection without future leakage.
@@ -292,8 +291,7 @@ import numpy as np
 
 #     return df
 
-=======
->>>>>>> 5e2fe37bca72119bb637f350f66b9ea6503167a3
+
 def add_nearest_sr(df, lookback=21, tolerance=0.002):
     """
     Optimized support/resistance detection without future leakage.

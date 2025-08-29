@@ -42,7 +42,7 @@ MODEL_FILE = Path(f"models/{version}/enhanced_model_pipeline.pkl")
 # === LOGGING ===
 LOG_FILE = Path("outputs/logs/system.log")
 
-<<<<<<< HEAD
+
 # ====Feature Columns====
 FEATURE_COLUMNS = [
     'ema20_ema50',	'ema50_ema200',	'ema20_price',	'ema50_price',	'ema200_price',	'rsi',	'atr_pct',
@@ -59,8 +59,8 @@ FEATURE_COLUMNS = [
 #    	'ema50_ema200',	'atr_pct', 'ema20_50_cross_up', 'ema20_50_cross_down', 'sma20_sma50', 'sma20_50_cross_up'
 # ]
 
-CONFIDENCE_THRESHOLD = 0.75
-=======
+CONFIDENCE_THRESHOLD = 0.65
+
 #====Feature Columns====
 # FEATURE_COLUMNS = [
 #     'ema20_ema50',	'ema50_ema200',	'ema20_price',	'ema50_price',	'ema200_price',	'rsi',	'atr_pct',
@@ -97,6 +97,6 @@ CONFIDENCE_THRESHOLD = 0.73
 # 0.75    145   15.67  -1.05
 # 0.76  145   13.81  -1.07
 # 0.77  75   9.14  -1.11
->>>>>>> 5e2fe37bca72119bb637f350f66b9ea6503167a3
+
 
 

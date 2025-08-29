@@ -91,6 +91,8 @@ def main():
         logger.info(" Starting backtest...")
         df = pd.read_parquet(HISTORICAL_DATA_FILE)
         df['date'] = pd.to_datetime(df['date'])
+        print(df)
+        sleep(10)
         df = df[df['date'] > pd.to_datetime("2024-04-15")]
         # df = df[df['date'] < pd.to_datetime("2025-07-15")]
         
